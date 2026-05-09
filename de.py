@@ -27,32 +27,57 @@ if st.session_state.halaman == "Page 1":
 # PAGE 2: BORANG TEMPAHAN (IKUT NOTA SEBIJI)
 # ==========================================
 elif st.session_state.halaman == "Page 2":
-    st.title("PAGE 2")
-    nama = st.text_input("NAMA :")
-    kategori = st.selectbox("kategori", ["motor", "kereta", "4x4"])
-    tarikh = st.text_input("TARIKH / MASA")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("*Pick Up*")
-        addr1 = st.text_input("Alamat", key="p1")
-        tel1 = st.text_input("no tel", key="p2")
-        kaw1 = st.text_input("kawasan", key="p3")
-    with col2:
-        st.write("*DROP*")
-        addr2 = st.text_input("Alamat ", key="d1")
-        tel2 = st.text_input("no tel ", key="d2")
-        kaw2 = st.text_input("kawasan ", key="d3")
+    # 1. Masukkan CSS untuk kecilkan tulisan dan rapatkan kotak
+    st.markdown("""
+        <style>
+        .stTextInput, .stSelectbox, .stNumberInput { margin-bottom: -15px !important; }
+        label { font-size: 13px !important; font-weight: bold; color: #333; }
+        div[data-baseweb="input"] { min-height: 30px !important; }
+        </style>
+        """, unsafe_allow_html=True)
 
-    st.write("---")
-    # GOOGLE MAP PINTAR
+    st.subheader("BORANG TEMPAHAN")
+
+    # 2. Susun Nama, Kategori & Tarikh dalam 3 kolum (Baris 1)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        nama = st.text_input("NAMA :")
+    with c2:
+        kategori = st.selectbox("Kategori", ["motor", "kereta", "4x4"])
+    with c3:
+        tarikh = st.text_input("TARIKH/MASA")
+
+    st.divider() # Garis nipis pemisah
+
+    # 3. Susun Pick Up & Drop secara bersebelahan (Baris 2)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.caption("📍 *PICK UP*")
+        addr1 = st.text_input("Alamat", key="p1", placeholder="Lokasi asal")
+        tel1 = st.text_input("No Tel", key="p2")
+        kaw1 = st.text_input("Kawasan", key="p3")
+
+    with col2:
+        st.caption("🏁 *DROP*")
+        addr2 = st.text_input("Alamat ", key="d1", placeholder="Lokasi tuju")
+        tel2 = st.text_input("No Tel ", key="d2")
+        kaw2 = st.text_input("Kawasan ", key="d3")
+
+    st.divider()
+
+    # 4. Bahagian Google Map Pintar & Jarak (Baris 3)
     if addr1 and addr2:
         asal = urllib.parse.quote(f"{addr1} {kaw1}")
         tuju = urllib.parse.quote(f"{addr2} {kaw2}")
         link = f"https://www.google.com/maps/dir/?api=1&origin={asal}&destination={tuju}"
-        st.link_button("🌐 LIHAT JARAK DI GOOGLE MAPS", link)
-
-    jarak = st.number_input("jarak = (google map)", min_value=0.0)
+        
+        # Susun Butang & Input Jarak sebelah-menyebelah
+        cx, cy = st.columns([2, 1])
+        with cx:
+            st.link_button("🔍 LIHAT JARAK DI GOOGLE MAPS", link, use_container_width=True)
+        with cy:
+            jarak = st.number_input("Jarak (KM)", min_value=0.0, step=0.1)
     
     # FORMULA KADAR NOTA KAK EMI
     harga = 0.0
